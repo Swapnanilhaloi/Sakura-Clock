@@ -43,10 +43,10 @@ function WeatherCardBase() {
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-fg/45">
+          <p className="text-xs font-semibold uppercase tracking-widest text-fg/65">
             {weather.location}
           </p>
-          <p className="mt-1 text-sm capitalize text-fg/70">{weather.condition}</p>
+          <p className="mt-1 text-sm font-medium capitalize text-fg/85">{weather.condition}</p>
         </div>
         <motion.div
           className="grid h-11 w-11 place-items-center rounded-2xl"
@@ -62,7 +62,7 @@ function WeatherCardBase() {
         <span className="text-5xl font-semibold tabular-nums leading-none text-glow">
           {weather.temperature}°
         </span>
-        <span className="mb-1 text-xs text-fg/45">feels {weather.feelsLike}°</span>
+        <span className="mb-1 text-xs font-medium text-fg/65">feels {weather.feelsLike}°</span>
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
@@ -86,10 +86,10 @@ function Metric({
 }) {
   return (
     <div className="flex items-center gap-2.5">
-      <Icon size={16} strokeWidth={1.6} className="shrink-0 text-fg/40" />
+      <Icon size={16} strokeWidth={1.8} className="shrink-0 text-fg/60" />
       <div className="min-w-0">
-        <p className="text-[0.65rem] uppercase tracking-wider text-fg/40">{label}</p>
-        <p className="truncate text-sm font-medium text-fg/80">{value}</p>
+        <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-fg/60">{label}</p>
+        <p className="truncate text-sm font-semibold text-fg/90">{value}</p>
       </div>
     </div>
   )

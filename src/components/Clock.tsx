@@ -66,15 +66,21 @@ function ClockBase() {
         transition={{ delay: 0.35, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       >
         <p
-          className="text-lg font-medium tracking-[0.3em] text-fg/85 sm:text-2xl"
-          style={{ color: 'var(--accent-soft)' }}
+          className="flex items-center justify-center rounded-full px-4 py-1 backdrop-blur-md"
+          style={{
+            color: 'var(--accent-soft)',
+            background: 'rgba(9,9,11,0.35)',
+            boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.06)',
+          }}
         >
-          {clock.weekday}
+          <span className="-mr-[0.3em] text-lg font-medium tracking-[0.3em] sm:text-2xl">
+            {clock.weekday}
+          </span>
         </p>
-        <p className="text-sm font-light tracking-[0.2em] text-fg/55 sm:text-base">
+        <p className="text-sm font-medium tracking-[0.2em] text-fg/75 sm:text-base">
           {clock.date}
         </p>
-        <div className="mt-3 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[0.7rem] font-medium tracking-widest text-fg/60 backdrop-blur-md">
+        <div className="mt-3 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[0.7rem] font-semibold tracking-widest text-fg/80 backdrop-blur-md">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: 'var(--accent)' }} />
           {settings.timezone} · {offset}
         </div>

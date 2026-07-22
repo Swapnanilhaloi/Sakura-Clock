@@ -57,6 +57,7 @@ export const DEFAULT_SETTINGS: Settings = {
   timezone: DEFAULT_TIMEZONE,
   music: DEFAULT_MUSIC_SOURCE,
   dayNightCycle: true,
+  manualPhase: 'night',
 }
 
 export const STORAGE_KEY = 'sakura-clock:settings:v1'

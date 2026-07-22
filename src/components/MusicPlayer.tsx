@@ -117,7 +117,7 @@ export const MusicPlayer = forwardRef<MusicPlayerHandle>(function MusicPlayer(_p
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[0.65rem] uppercase tracking-widest text-fg/40">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-fg/60">
                   Now playing
                 </p>
                 <p className="break-words text-sm font-medium leading-snug text-fg/85">

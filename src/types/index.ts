@@ -36,6 +36,8 @@ export interface Settings {
   music: MusicSource
   /** Shift the sky's colours through dawn/day/dusk/night based on the clock's timezone. */
   dayNightCycle: boolean
+  /** Sky phase shown when dayNightCycle is off. */
+  manualPhase: 'day' | 'night'
 }
 
 /** A YouTube playlist or single video the music player streams from. */

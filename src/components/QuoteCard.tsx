@@ -9,7 +9,11 @@ function QuoteCardBase() {
 
   return (
     <motion.div
-      className="pointer-events-none flex max-w-xl items-center justify-center gap-3 px-6 text-center"
+      className="pointer-events-none flex max-w-xl items-center justify-center gap-3 rounded-full px-6 py-2 text-center backdrop-blur-md"
+      style={{
+        background: 'rgba(9,9,11,0.35)',
+        boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.06)',
+      }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.7, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
@@ -24,7 +28,7 @@ function QuoteCardBase() {
         <AnimatePresence mode="wait">
           <motion.p
             key={index}
-            className="text-sm font-light italic tracking-wide text-fg/70 sm:text-base"
+            className="text-sm font-normal italic tracking-wide text-fg/85 sm:text-base"
             initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -8, filter: 'blur(8px)' }}

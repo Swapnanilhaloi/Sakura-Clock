@@ -6,16 +6,15 @@ import { SkyCanvas } from './SkyCanvas'
 
 /**
  * The full ambient scene: an animated gradient sky, a glowing moon, slow
- * drifting clouds, a layered mountain silhouette with a pine treeline and
- * torii gate, and the particle canvas. The sky's colours and star
- * brightness shift through dawn/day/dusk/night on the clock's own timezone
- * (toggle via Settings → Atmosphere → Day/night cycle). Memoised so clock
- * ticks never re-render the background.
+ * drifting clouds, a torii gate, and the particle canvas. The sky's colours
+ * and star brightness shift through dawn/day/dusk/night on the clock's own
+ * timezone (toggle via Settings → Atmosphere → Day/night cycle). Memoised so
+ * clock ticks never re-render the background.
  */
 function BackgroundBase() {
   const { settings } = useSettings()
   const intensity = settings.backgroundIntensity
-  const phase = useDayPhase(settings.timezone, settings.dayNightCycle)
+  const phase = useDayPhase(settings.timezone, settings.dayNightCycle, settings.manualPhase)
 
   // Flips every text element app-wide (via html.daytime in index.css) to
   // near-black during the bright 'Day' phase, so it stays legible against
@@ -76,14 +75,8 @@ function BackgroundBase() {
       {/* Particle canvas: stars, particles, petals */}
       <SkyCanvas settings={settings} starOpacity={phase.starOpacity} />
 
-      {/* Mountain silhouettes, tinted per day-phase */}
-      <Mountains far={phase.mountainFar} near={phase.mountainNear} />
-
-      {/* Pine treeline, a shade darker than the near range for depth */}
-      <Forest tint={darken(phase.mountainNear, 0.35)} />
-
-      {/* Torii gate standing at the treeline */}
-      <Torii tint={phase.mountainNear} />
+      {/* Torii gate, standing alone as the scene's centerpiece */}
+      <Torii />
     </div>
   )
 }
@@ -119,43 +112,6 @@ const Clouds = memo(function Clouds({ intensity }: { intensity: number }) {
           }}
         />
       ))}
-    </div>
-  )
-})
-
-const Mountains = memo(function Mountains({
-  far,
-  near,
-}: {
-  far: string
-  near: string
-}) {
-  return (
-    <div aria-hidden className="absolute inset-x-0 bottom-0">
-      {/* Far range */}
-      <svg
-        className="absolute bottom-0 w-full"
-        viewBox="0 0 1440 320"
-        preserveAspectRatio="none"
-        height="320"
-      >
-        <path
-          style={{ fill: far, fillOpacity: 0.9, transition: 'fill 3s ease' }}
-          d="M0,220 L180,140 L360,210 L560,110 L760,200 L980,120 L1180,205 L1440,150 L1440,320 L0,320 Z"
-        />
-      </svg>
-      {/* Near range */}
-      <svg
-        className="absolute bottom-0 w-full"
-        viewBox="0 0 1440 240"
-        preserveAspectRatio="none"
-        height="240"
-      >
-        <path
-          style={{ fill: near, transition: 'fill 3s ease' }}
-          d="M0,180 L220,90 L430,175 L680,70 L920,170 L1160,95 L1440,180 L1440,240 L0,240 Z"
-        />
-      </svg>
     </div>
   )
 })
@@ -200,100 +156,40 @@ const Moon = memo(function Moon({ opacity }: { opacity: number }) {
   )
 })
 
-/** Deterministic pseudo-random in [0,1) so the treeline is stable across renders. */
-function pseudoRandom(seed: number): number {
-  const x = Math.sin(seed * 12.9898) * 43758.5453
-  return x - Math.floor(x)
-}
+const TORII_RED = '#c1440e'
+const TORII_RED_DARK = '#8f3009'
+const TORII_CAP = '#241c18'
 
-interface TreeSpec {
-  x: number
-  h: number
-  w: number
-}
-
-const TREE_COUNT = 46
-const TREES: TreeSpec[] = Array.from({ length: TREE_COUNT }, (_, i) => {
-  const r = pseudoRandom(i)
-  return {
-    x: (i / TREE_COUNT) * 1440 + (r - 0.5) * 24,
-    h: 30 + r * 46,
-    w: 16 + r * 10,
-  }
-})
-
-/** A simple three-tier evergreen silhouette, tip at (x, base - h). */
-function pinePath(x: number, h: number, w: number): string {
-  const base = 96
-  return [
-    `M${x},${base}`,
-    `L${x - w * 0.5},${base - h * 0.32} L${x - w * 0.22},${base - h * 0.32}`,
-    `L${x - w * 0.42},${base - h * 0.62} L${x - w * 0.16},${base - h * 0.62}`,
-    `L${x},${base - h}`,
-    `L${x + w * 0.16},${base - h * 0.62} L${x + w * 0.42},${base - h * 0.62}`,
-    `L${x + w * 0.22},${base - h * 0.32} L${x + w * 0.5},${base - h * 0.32} Z`,
-  ].join(' ')
-}
-
-const Forest = memo(function Forest({ tint }: { tint: string }) {
-  return (
-    <svg
-      aria-hidden
-      className="absolute bottom-0 w-full"
-      viewBox="0 0 1440 96"
-      preserveAspectRatio="none"
-      height="96"
-    >
-      <g style={{ fill: tint, transition: 'fill 3s ease' }}>
-        {TREES.map((t, i) => (
-          <path key={i} d={pinePath(t.x, t.h, t.w)} />
-        ))}
-      </g>
-    </svg>
-  )
-})
-
-const Torii = memo(function Torii({ tint }: { tint: string }) {
+const Torii = memo(function Torii() {
   return (
     <div
       aria-hidden
-      className="absolute"
-      style={{
-        bottom: '2%',
-        right: '14%',
-      }}
+      className="absolute left-1/2 bottom-0"
+      style={{ transform: 'translateX(-50%)' }}
     >
       <svg
-        width="110"
-        height="96"
+        width="220"
+        height="192"
         viewBox="0 0 110 96"
-        style={{ filter: 'drop-shadow(0 0 14px var(--accent-soft))', opacity: 0.85 }}
+        style={{ filter: 'drop-shadow(0 0 20px rgba(193,68,14,0.45))' }}
       >
-        <g style={{ fill: tint, transition: 'fill 3s ease' }}>
-          {/* Kasagi — top curved beam */}
-          <path d="M2,14 Q55,-8 108,14 L108,24 Q55,4 2,24 Z" />
-          {/* Shimaki — second beam beneath it */}
-          <rect x="6" y="26" width="98" height="7" rx="1.5" />
-          {/* Pillars */}
-          <rect x="16" y="16" width="9" height="76" rx="1.5" />
-          <rect x="85" y="16" width="9" height="76" rx="1.5" />
-          {/* Nuki — tie beam */}
-          <rect x="10" y="46" width="90" height="6" rx="1.5" />
-          {/* Gakuzuka — central support */}
-          <rect x="50" y="24" width="10" height="16" />
-        </g>
+        {/* Kasagi — top curved beam, with dark lacquered tips */}
+        <path fill={TORII_CAP} d="M2,14 Q55,-8 108,14 L108,24 Q55,4 2,24 Z" />
+        <path fill={TORII_RED} d="M9,15 Q55,-3 101,15 L101,22 Q55,7 9,22 Z" />
+        {/* Shimaki — second beam beneath it */}
+        <rect fill={TORII_RED} x="6" y="26" width="98" height="7" rx="1.5" />
+        {/* Pillars, tapering slightly with a darker base */}
+        <rect fill={TORII_RED} x="16" y="16" width="9" height="76" rx="1.5" />
+        <rect fill={TORII_RED_DARK} x="15" y="80" width="11" height="12" rx="1" />
+        <rect fill={TORII_RED} x="85" y="16" width="9" height="76" rx="1.5" />
+        <rect fill={TORII_RED_DARK} x="84" y="80" width="11" height="12" rx="1" />
+        {/* Nuki — tie beam */}
+        <rect fill={TORII_RED} x="10" y="46" width="90" height="6" rx="1.5" />
+        {/* Gakuzuka — central support, in the dark lacquer tone */}
+        <rect fill={TORII_CAP} x="50" y="24" width="10" height="16" />
       </svg>
     </div>
   )
 })
-
-/** Mixes a #rrggbb colour toward black by `amount` (0–1). */
-function darken(hex: string, amount: number): string {
-  const h = hex.replace('#', '')
-  const r = Math.round(parseInt(h.slice(0, 2), 16) * (1 - amount))
-  const g = Math.round(parseInt(h.slice(2, 4), 16) * (1 - amount))
-  const b = Math.round(parseInt(h.slice(4, 6), 16) * (1 - amount))
-  return `rgb(${r}, ${g}, ${b})`
-}
 
 export const Background = memo(BackgroundBase)

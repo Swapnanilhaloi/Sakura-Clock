@@ -94,8 +94,10 @@ const EVENING: DayPhase = {
   mountainNear: '#06080f',
 }
 
-/** Fallback phase used when the day/night cycle is turned off. */
-export const STATIC_PHASE = NIGHT
+/** Resolves the manual day/night pick to its sky phase, for when the cycle is off. */
+export function getManualPhase(pick: 'day' | 'night'): DayPhase {
+  return pick === 'day' ? DAY : NIGHT
+}
 
 /** Ordered boundaries; a phase runs from its `from` hour up to the next one's. */
 const SCHEDULE: Array<{ from: number; phase: DayPhase }> = [

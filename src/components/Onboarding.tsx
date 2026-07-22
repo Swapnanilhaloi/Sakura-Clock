@@ -79,7 +79,7 @@ export function Onboarding({ open, onClose }: OnboardingProps) {
                 </button>
               </div>
 
-              <p className="mb-6 text-sm leading-relaxed text-fg/60">
+              <p className="mb-6 text-sm font-medium leading-relaxed text-fg/80">
                 A quiet corner of your screen — a clock, some weather, and a
                 little ambience. Here's what's here.
               </p>
@@ -95,7 +95,7 @@ export function Onboarding({ open, onClose }: OnboardingProps) {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-fg/85">{tip.title}</p>
-                      <p className="text-xs leading-relaxed text-fg/50">{tip.body}</p>
+                      <p className="text-xs font-medium leading-relaxed text-fg/70">{tip.body}</p>
                     </div>
                   </li>
                 ))}

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Music, RotateCcw, X } from 'lucide-react'
+import { Check, Moon, Music, RotateCcw, Sun, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import type { AccentKey, Settings as SettingsType } from '@/types'
 import { useSettings } from '@/hooks/useSettings'
@@ -41,7 +41,7 @@ export function Settings({ open, onClose }: SettingsProps) {
             <header className="flex items-center justify-between border-b border-white/10 px-6 py-5">
               <div>
                 <h2 className="text-lg font-semibold tracking-wide">Settings</h2>
-                <p className="text-xs text-fg/45">Saved automatically to this device</p>
+                <p className="text-xs font-medium text-fg/65">Saved automatically to this device</p>
               </div>
               <button
                 type="button"
@@ -77,7 +77,7 @@ export function Settings({ open, onClose }: SettingsProps) {
               {/* Appearance */}
               <Section title="Appearance">
                 <div className="space-y-3">
-                  <p className="text-sm text-fg/70">Accent colour</p>
+                  <p className="text-sm font-medium text-fg/85">Accent colour</p>
                   <div className="flex flex-wrap gap-3">
                     {ACCENTS.map((a) => (
                       <AccentSwatch
@@ -137,6 +137,11 @@ export function Settings({ open, onClose }: SettingsProps) {
                   checked={settings.dayNightCycle}
                   onChange={(v) => update('dayNightCycle', v)}
                 />
+                <PhaseRow
+                  value={settings.manualPhase}
+                  disabled={settings.dayNightCycle}
+                  onChange={(v) => update('manualPhase', v)}
+                />
               </Section>
 
               {/* Music */}
@@ -152,7 +157,7 @@ export function Settings({ open, onClose }: SettingsProps) {
               <button
                 type="button"
                 onClick={reset}
-                className="flex items-center gap-2 text-sm text-fg/50 transition-colors hover:text-fg"
+                className="flex items-center gap-2 text-sm font-medium text-fg/70 transition-colors hover:text-fg"
               >
                 <RotateCcw size={15} />
                 Reset to defaults
@@ -168,7 +173,7 @@ export function Settings({ open, onClose }: SettingsProps) {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-4">
-      <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-fg/40">
+      <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-fg/60">
         {title}
       </h3>
       {children}
@@ -187,7 +192,7 @@ function ToggleRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-sm text-fg/70">{label}</span>
+      <span className="text-sm font-medium text-fg/85">{label}</span>
       <button
         type="button"
         role="switch"
@@ -203,6 +208,52 @@ function ToggleRow({
           transition={{ type: 'spring', stiffness: 500, damping: 32 }}
         />
       </button>
+    </div>
+  )
+}
+
+function PhaseRow({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: 'day' | 'night'
+  disabled: boolean
+  onChange: (v: 'day' | 'night') => void
+}) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className={`text-sm font-medium ${disabled ? 'text-fg/40' : 'text-fg/85'}`}>Manual sky</span>
+      <div className="flex gap-1 rounded-full border border-white/10 bg-white/[0.06] p-0.5">
+        {(
+          [
+            { key: 'day' as const, label: 'Day', Icon: Sun },
+            { key: 'night' as const, label: 'Night', Icon: Moon },
+          ]
+        ).map(({ key, label, Icon }) => {
+          const active = value === key
+          return (
+            <button
+              key={key}
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange(key)}
+              aria-pressed={active}
+              aria-label={label}
+              title={label}
+              className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              style={
+                active
+                  ? { background: 'var(--accent)', color: '#09090b' }
+                  : { color: 'rgba(244,244,245,0.8)' }
+              }
+            >
+              <Icon size={12} />
+              {label}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -227,8 +278,8 @@ function SliderRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-fg/70">{label}</span>
-        <span className="tabular-nums text-fg/45">{format(value)}</span>
+        <span className="font-medium text-fg/85">{label}</span>
+        <span className="font-medium tabular-nums text-fg/65">{format(value)}</span>
       </div>
       <input
         type="range"
@@ -257,11 +308,11 @@ function SelectRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-fg/70">{label}</span>
+      <span className="text-sm font-medium text-fg/85">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-fg/80 outline-none transition-colors focus:border-white/25"
+        className="max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-fg/90 outline-none transition-colors focus:border-white/25"
       >
         {options.map((o) => (
           <option key={o} value={o} className="bg-ink-850 text-white">
@@ -298,14 +349,14 @@ function MusicSourceField({
   return (
     <div className="space-y-3">
       <div
-        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-fg/80"
+        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-medium text-fg/90"
         title={current.id}
       >
-        <Music size={14} className="shrink-0 text-fg/40" />
+        <Music size={14} className="shrink-0 text-fg/60" />
         <span className="min-w-0 flex-1 truncate">
           {current.label ?? (current.type === 'playlist' ? 'Custom playlist' : 'Custom video')}
         </span>
-        <span className="shrink-0 text-[0.65rem] uppercase tracking-wider text-fg/35">
+        <span className="shrink-0 text-[0.65rem] uppercase tracking-wider text-fg/55">
           {current.type}
         </span>
       </div>
@@ -320,7 +371,7 @@ function MusicSourceField({
               onClick={() => onApply(preset)}
               aria-pressed={active}
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-                active ? 'text-[#09090b]' : 'text-fg/70 hover:bg-white/10'
+                active ? 'text-[#09090b]' : 'text-fg/85 hover:bg-white/10'
               }`}
               style={
                 active
@@ -347,7 +398,7 @@ function MusicSourceField({
               if (e.key === 'Enter') apply()
             }}
             placeholder="Paste a YouTube playlist or video URL"
-            className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-fg/80 outline-none transition-colors placeholder:text-fg/30 focus:border-white/25"
+            className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-fg/90 outline-none transition-colors placeholder:font-normal placeholder:text-fg/45 focus:border-white/25"
           />
           <button
             type="button"
@@ -359,7 +410,7 @@ function MusicSourceField({
           </button>
         </div>
         {error && <p className="text-xs text-red-300/80">{error}</p>}
-        <p className="text-xs text-fg/35">
+        <p className="text-xs font-medium text-fg/55">
           Works with any playlist link, or a single video/live-stream link to
           loop.
         </p>

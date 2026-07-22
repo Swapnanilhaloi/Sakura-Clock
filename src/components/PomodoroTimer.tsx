@@ -177,7 +177,7 @@ export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTi
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[0.65rem] uppercase tracking-widest text-fg/60">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-widest text-fg/75">
                   {MODE_LABEL[mode]}
                 </p>
                 <p className="text-2xl font-semibold tabular-nums text-fg/90">
@@ -290,7 +290,7 @@ function DurationRow({
 }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <label htmlFor={id} className="text-fg/70">
+      <label htmlFor={id} className="font-medium text-fg/85">
         {label}
       </label>
       <div className="flex items-center gap-1.5">
