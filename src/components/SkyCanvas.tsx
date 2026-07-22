@@ -4,9 +4,6 @@ import { getAccent } from '@/utils/constants'
 
 interface SkyCanvasProps {
   settings: Pick<Settings, 'sakura' | 'stars' | 'particleAmount' | 'accent'>
-  /** Parallax offset from the pointer, -1 … 1 on each axis. */
-  parallaxX: number
-  parallaxY: number
   /** Star brightness multiplier from the current day-phase, 0–1. */
   starOpacity: number
 }
@@ -28,12 +25,15 @@ interface Particle {
   alpha: number
 }
 interface Petal {
+  /** Anchor x — the centre the petal drifts around as it sways, not its drawn position. */
   x: number
   y: number
   size: number
   vy: number
   sway: number
   swaySpeed: number
+  /** Per-petal phase offset so sways and tumbles don't all sync up. */
+  phase: number
   angle: number
   spin: number
   tone: number
@@ -42,13 +42,13 @@ interface Petal {
 /**
  * A single-canvas particle engine. Stars, glowing particles and sakura petals
  * all share one requestAnimationFrame loop so the whole ambience costs one
- * draw pass per frame. Live settings/parallax flow in through a ref, which
- * means the loop is created once and never torn down on prop changes.
+ * draw pass per frame. Live settings flow in through a ref, which means the
+ * loop is created once and never torn down on prop changes.
  */
-export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCanvasProps) {
+export function SkyCanvas({ settings, starOpacity }: SkyCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const live = useRef({ settings, parallaxX, parallaxY, starOpacity })
-  live.current = { settings, parallaxX, parallaxY, starOpacity }
+  const live = useRef({ settings, starOpacity })
+  live.current = { settings, starOpacity }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -97,19 +97,23 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
 
     const buildPetals = () => {
       const amt = live.current.settings.particleAmount
-      const count = Math.round(((width * height) / 46000) * (0.4 + amt))
-      petals = Array.from({ length: count }, () => makePetal(rand(-height, 0)))
+      const count = Math.round(((width * height) / 32000) * (0.4 + amt))
+      // Spawn already spread through the visible band (plus a little above,
+      // to feed the fall) so the scene reads as populated immediately
+      // instead of every petal starting off-screen and trickling in.
+      petals = Array.from({ length: count }, () => makePetal(rand(-height * 0.3, height)))
     }
 
     const makePetal = (startY: number): Petal => ({
       x: Math.random() * width,
       y: startY,
-      size: rand(6, 13),
+      size: rand(10, 20),
       vy: rand(0.5, 1.3),
       sway: rand(20, 55),
       swaySpeed: rand(0.6, 1.4),
+      phase: Math.random() * Math.PI * 2,
       angle: Math.random() * Math.PI * 2,
-      spin: rand(-0.02, 0.02),
+      spin: rand(-0.03, 0.03),
       tone: Math.random(),
     })
 
@@ -142,7 +146,7 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
     let t = 0
 
     const draw = () => {
-      const { settings: s, parallaxX: px, parallaxY: py, starOpacity: starOp } = live.current
+      const { settings: s, starOpacity: starOp } = live.current
       t += reduce ? 0 : 1
       const accent = getAccent(s.accent)
 
@@ -150,12 +154,10 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
 
       // --- Stars ------------------------------------------------------------
       if (s.stars && starOp > 0.01) {
-        const ox = px * 6
-        const oy = py * 6
         for (const st of stars) {
           const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * 0.02 * st.speed + st.phase))
           ctx.beginPath()
-          ctx.arc(st.x + ox, st.y + oy, st.r, 0, Math.PI * 2)
+          ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2)
           ctx.fillStyle = `rgba(226, 232, 240, ${tw * starOp})`
           ctx.fill()
         }
@@ -163,8 +165,6 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
 
       // --- Glowing particles ------------------------------------------------
       if (particles.length) {
-        const ox = px * 14
-        const oy = py * 14
         for (const p of particles) {
           if (!reduce) {
             p.y -= p.vy
@@ -176,7 +176,7 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
           }
           const a = p.alpha * (0.6 + 0.4 * Math.sin(t * 0.03 + p.phase))
           ctx.beginPath()
-          ctx.arc(p.x + ox, p.y + oy, p.r, 0, Math.PI * 2)
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
           ctx.fillStyle = hexToRgba(accent.soft, Math.max(0, a))
           ctx.shadowBlur = 8
           ctx.shadowColor = accent.value
@@ -187,16 +187,21 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
 
       // --- Sakura petals ----------------------------------------------------
       if (s.sakura) {
-        const ox = px * 22
-        const oy = py * 22
         for (const pet of petals) {
           if (!reduce) {
-            pet.y += pet.vy
+            // Flutter the fall speed a little instead of a constant drop —
+            // real petals catch air and speed up/slow down as they turn.
+            pet.y += pet.vy * (0.75 + 0.35 * Math.sin(t * 0.03 * pet.swaySpeed + pet.phase))
             pet.angle += pet.spin
-            pet.x += Math.sin(t * 0.01 * pet.swaySpeed + pet.y * 0.01) * 0.5
             if (pet.y > height + 20) Object.assign(pet, makePetal(-20))
           }
-          drawPetal(ctx, pet, ox, oy)
+          // Sway around the anchor x (pet.x) by its own amplitude/speed,
+          // rather than moving the anchor itself — keeps drift bounded.
+          const swayX = Math.sin(t * 0.015 * pet.swaySpeed + pet.phase) * pet.sway
+          // Squash vertically in sync with rotation for a tumbling,
+          // edge-on-then-face-on flip as the petal spins through the fall.
+          const tumble = 0.55 + 0.45 * Math.cos(pet.angle * 2)
+          drawPetal(ctx, pet, swayX, tumble)
         }
       }
 
@@ -230,7 +235,7 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
 }
 
 /** Draw a five-petal-ish soft sakura shape as two mirrored bezier lobes. */
-function drawPetal(ctx: CanvasRenderingContext2D, p: Petal, ox: number, oy: number) {
+function drawPetal(ctx: CanvasRenderingContext2D, p: Petal, swayX: number, tumble = 1) {
   const tones = [
     ['#F9A8D4', '#F472B6'],
     ['#FBCFE8', '#F9A8D4'],
@@ -239,12 +244,13 @@ function drawPetal(ctx: CanvasRenderingContext2D, p: Petal, ox: number, oy: numb
   const [c1, c2] = tones[Math.floor(p.tone * tones.length) % tones.length]
 
   ctx.save()
-  ctx.translate(p.x + ox, p.y + oy)
+  ctx.translate(p.x + swayX, p.y)
   ctx.rotate(p.angle)
+  ctx.scale(1, tumble)
   const s = p.size
   const grad = ctx.createLinearGradient(0, -s, 0, s)
-  grad.addColorStop(0, hexToRgba(c1, 0.85))
-  grad.addColorStop(1, hexToRgba(c2, 0.6))
+  grad.addColorStop(0, hexToRgba(c1, 0.95))
+  grad.addColorStop(1, hexToRgba(c2, 0.8))
   ctx.fillStyle = grad
   ctx.beginPath()
   // A single soft petal lobe.

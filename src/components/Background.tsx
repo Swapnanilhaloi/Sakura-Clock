@@ -1,22 +1,19 @@
 import { memo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSettings } from '@/hooks/useSettings'
-import { useMousePosition } from '@/hooks/useMousePosition'
 import { useDayPhase } from '@/hooks/useDayPhase'
 import { SkyCanvas } from './SkyCanvas'
 
 /**
  * The full ambient scene: an animated gradient sky, a glowing moon, slow
- * drifting clouds and bird flocks, a layered mountain silhouette with a pine
- * treeline and torii gate, and the particle canvas — all shifted gently by
- * the pointer for a parallax depth effect. The sky's colours and star
+ * drifting clouds, a layered mountain silhouette with a pine treeline and
+ * torii gate, and the particle canvas. The sky's colours and star
  * brightness shift through dawn/day/dusk/night on the clock's own timezone
  * (toggle via Settings → Atmosphere → Day/night cycle). Memoised so clock
  * ticks never re-render the background.
  */
 function BackgroundBase() {
   const { settings } = useSettings()
-  const parallax = useMousePosition(true)
   const intensity = settings.backgroundIntensity
   const phase = useDayPhase(settings.timezone, settings.dayNightCycle)
 
@@ -71,61 +68,34 @@ function BackgroundBase() {
       </div>
 
       {/* Moon, brightest at night and fading out through the day */}
-      <Moon
-        opacity={settings.stars ? phase.starOpacity : 0}
-        parallaxX={parallax.x}
-        parallaxY={parallax.y}
-      />
+      <Moon opacity={settings.stars ? phase.starOpacity : 0} />
 
       {/* Drifting clouds */}
-      <Clouds parallaxX={parallax.x} intensity={intensity} />
-
-      {/* Distant bird flocks crossing the sky */}
-      <BirdFlock parallaxX={parallax.x} />
+      <Clouds intensity={intensity} />
 
       {/* Particle canvas: stars, particles, petals */}
-      <SkyCanvas
-        settings={settings}
-        parallaxX={parallax.x}
-        parallaxY={parallax.y}
-        starOpacity={phase.starOpacity}
-      />
+      <SkyCanvas settings={settings} starOpacity={phase.starOpacity} />
 
       {/* Mountain silhouettes, tinted per day-phase */}
-      <Mountains
-        parallaxX={parallax.x}
-        parallaxY={parallax.y}
-        far={phase.mountainFar}
-        near={phase.mountainNear}
-      />
+      <Mountains far={phase.mountainFar} near={phase.mountainNear} />
 
       {/* Pine treeline, a shade darker than the near range for depth */}
-      <Forest parallaxX={parallax.x} parallaxY={parallax.y} tint={darken(phase.mountainNear, 0.35)} />
+      <Forest tint={darken(phase.mountainNear, 0.35)} />
 
       {/* Torii gate standing at the treeline */}
-      <Torii parallaxX={parallax.x} parallaxY={parallax.y} tint={phase.mountainNear} />
+      <Torii tint={phase.mountainNear} />
     </div>
   )
 }
 
-const Clouds = memo(function Clouds({
-  parallaxX,
-  intensity,
-}: {
-  parallaxX: number
-  intensity: number
-}) {
+const Clouds = memo(function Clouds({ intensity }: { intensity: number }) {
   const clouds = [
     { top: '12%', size: 420, blur: 40, dur: 90, delay: 0, opacity: 0.1 },
     { top: '26%', size: 300, blur: 30, dur: 70, delay: -20, opacity: 0.08 },
     { top: '40%', size: 520, blur: 55, dur: 120, delay: -60, opacity: 0.07 },
   ]
   return (
-    <div
-      aria-hidden
-      className="absolute inset-0"
-      style={{ transform: `translateX(${parallaxX * -10}px)`, opacity: intensity }}
-    >
+    <div aria-hidden className="absolute inset-0" style={{ opacity: intensity }}>
       {clouds.map((c, i) => (
         <motion.div
           key={i}
@@ -154,13 +124,9 @@ const Clouds = memo(function Clouds({
 })
 
 const Mountains = memo(function Mountains({
-  parallaxX,
-  parallaxY,
   far,
   near,
 }: {
-  parallaxX: number
-  parallaxY: number
   far: string
   near: string
 }) {
@@ -169,7 +135,6 @@ const Mountains = memo(function Mountains({
       {/* Far range */}
       <svg
         className="absolute bottom-0 w-full"
-        style={{ transform: `translate(${parallaxX * 8}px, ${parallaxY * 4}px)` }}
         viewBox="0 0 1440 320"
         preserveAspectRatio="none"
         height="320"
@@ -182,7 +147,6 @@ const Mountains = memo(function Mountains({
       {/* Near range */}
       <svg
         className="absolute bottom-0 w-full"
-        style={{ transform: `translate(${parallaxX * 16}px, ${parallaxY * 7}px)` }}
         viewBox="0 0 1440 240"
         preserveAspectRatio="none"
         height="240"
@@ -196,15 +160,7 @@ const Mountains = memo(function Mountains({
   )
 })
 
-const Moon = memo(function Moon({
-  opacity,
-  parallaxX,
-  parallaxY,
-}: {
-  opacity: number
-  parallaxX: number
-  parallaxY: number
-}) {
+const Moon = memo(function Moon({ opacity }: { opacity: number }) {
   return (
     <div
       aria-hidden
@@ -214,7 +170,6 @@ const Moon = memo(function Moon({
         right: '15%',
         opacity,
         transition: 'opacity 3s ease',
-        transform: `translate(${parallaxX * 10}px, ${parallaxY * 6}px)`,
       }}
     >
       <div
@@ -241,49 +196,6 @@ const Moon = memo(function Moon({
           style={{ width: 6, height: 6, top: 30, left: 58, background: 'rgba(150,145,125,0.25)' }}
         />
       </div>
-    </div>
-  )
-})
-
-const BIRD_FLOCKS = [
-  { top: '17%', scale: 1, dur: 36, delay: 3 },
-  { top: '27%', scale: 0.7, dur: 46, delay: 22 },
-]
-
-const BirdFlock = memo(function BirdFlock({ parallaxX }: { parallaxX: number }) {
-  return (
-    <div aria-hidden className="absolute inset-0" style={{ transform: `translateX(${parallaxX * -4}px)` }}>
-      {BIRD_FLOCKS.map((f, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={{ top: f.top, opacity: 0.4 }}
-          initial={{ x: '-10vw' }}
-          animate={{ x: '110vw' }}
-          transition={{
-            duration: f.dur,
-            delay: f.delay,
-            repeat: Infinity,
-            repeatDelay: 16,
-            ease: 'easeInOut',
-          }}
-        >
-          <svg width={40 * f.scale} height={16 * f.scale} viewBox="0 0 40 16" fill="none">
-            {[0, 12, 24].map((dx, j) => (
-              <motion.path
-                key={j}
-                d={`M${dx},8 Q${dx + 4},2 ${dx + 8},8 Q${dx + 12},2 ${dx + 16},8`}
-                stroke="rgba(226,232,240,0.7)"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                animate={{ scaleY: [1, 0.4, 1] }}
-                transition={{ duration: 0.5 + j * 0.06, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ transformOrigin: `${dx + 8}px 8px` }}
-              />
-            ))}
-          </svg>
-        </motion.div>
-      ))}
     </div>
   )
 })
@@ -323,20 +235,11 @@ function pinePath(x: number, h: number, w: number): string {
   ].join(' ')
 }
 
-const Forest = memo(function Forest({
-  parallaxX,
-  parallaxY,
-  tint,
-}: {
-  parallaxX: number
-  parallaxY: number
-  tint: string
-}) {
+const Forest = memo(function Forest({ tint }: { tint: string }) {
   return (
     <svg
       aria-hidden
       className="absolute bottom-0 w-full"
-      style={{ transform: `translate(${parallaxX * 20}px, ${parallaxY * 8}px)` }}
       viewBox="0 0 1440 96"
       preserveAspectRatio="none"
       height="96"
@@ -350,15 +253,7 @@ const Forest = memo(function Forest({
   )
 })
 
-const Torii = memo(function Torii({
-  parallaxX,
-  parallaxY,
-  tint,
-}: {
-  parallaxX: number
-  parallaxY: number
-  tint: string
-}) {
+const Torii = memo(function Torii({ tint }: { tint: string }) {
   return (
     <div
       aria-hidden
@@ -366,7 +261,6 @@ const Torii = memo(function Torii({
       style={{
         bottom: '2%',
         right: '14%',
-        transform: `translate(${parallaxX * 16}px, ${parallaxY * 7}px)`,
       }}
     >
       <svg

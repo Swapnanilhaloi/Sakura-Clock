@@ -122,14 +122,14 @@ html.daytime {
 
 @layer utilities {
   .text-glow {
-    text-shadow: 0 0 24px rgba(255, 255, 255, 0.14);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.12);
     transition: text-shadow 0.6s ease;
   }
 
   /* A white glow reads as luminous at night but backwards on dark daytime
      text — swap it for a soft ink shadow instead. */
   html.daytime .text-glow {
-    text-shadow: 0 2px 20px rgba(9, 9, 11, 0.18);
+    text-shadow: 0 1px 8px rgba(9, 9, 11, 0.15);
   }
 
   .drag-none {
