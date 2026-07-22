@@ -73,13 +73,13 @@ export function Onboarding({ open, onClose }: OnboardingProps) {
                   type="button"
                   onClick={onClose}
                   aria-label="Close welcome guide"
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-fg/60 transition-colors hover:bg-white/10 hover:text-fg"
                 >
                   <X size={16} />
                 </button>
               </div>
 
-              <p className="mb-6 text-sm leading-relaxed text-white/60">
+              <p className="mb-6 text-sm leading-relaxed text-fg/60">
                 A quiet corner of your screen — a clock, some weather, and a
                 little ambience. Here's what's here.
               </p>
@@ -94,8 +94,8 @@ export function Onboarding({ open, onClose }: OnboardingProps) {
                       <tip.icon size={16} strokeWidth={1.7} />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white/85">{tip.title}</p>
-                      <p className="text-xs leading-relaxed text-white/50">{tip.body}</p>
+                      <p className="text-sm font-medium text-fg/85">{tip.title}</p>
+                      <p className="text-xs leading-relaxed text-fg/50">{tip.body}</p>
                     </div>
                   </li>
                 ))}

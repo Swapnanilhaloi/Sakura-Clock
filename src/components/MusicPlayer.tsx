@@ -63,7 +63,7 @@ export const MusicPlayer = forwardRef<MusicPlayerHandle>(function MusicPlayer(_p
           transition={{ duration: 0.6, ease: 'easeInOut' }}
         >
           <motion.div
-            className="absolute inset-0 grid place-items-center overflow-hidden rounded-full text-white/25"
+            className="absolute inset-0 grid place-items-center overflow-hidden rounded-full text-fg/25"
             animate={{ rotate: playing ? 360 : 0 }}
             transition={
               playing
@@ -117,10 +117,10 @@ export const MusicPlayer = forwardRef<MusicPlayerHandle>(function MusicPlayer(_p
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[0.65rem] uppercase tracking-widest text-white/40">
+                <p className="text-[0.65rem] uppercase tracking-widest text-fg/40">
                   Now playing
                 </p>
-                <p className="break-words text-sm font-medium leading-snug text-white/85">
+                <p className="break-words text-sm font-medium leading-snug text-fg/85">
                   {title ?? 'Loading…'}
                 </p>
               </div>
@@ -152,7 +152,7 @@ export const MusicPlayer = forwardRef<MusicPlayerHandle>(function MusicPlayer(_p
                   type="button"
                   onClick={() => setVolume(volume === 0 ? 60 : 0)}
                   aria-label="Mute"
-                  className="text-white/60 transition-colors hover:text-white"
+                  className="text-fg/60 transition-colors hover:text-fg"
                 >
                   {volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
                 </button>
@@ -193,7 +193,7 @@ function IconButton({
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="grid h-8 w-8 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+      className="grid h-8 w-8 place-items-center rounded-full text-fg/70 transition-colors hover:bg-white/10 hover:text-fg disabled:pointer-events-none disabled:opacity-30"
     >
       {children}
     </button>

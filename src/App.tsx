@@ -145,7 +145,7 @@ function ControlButton({
       aria-label={label}
       title={label}
       aria-pressed={active}
-      className="glass glass-hover grid h-11 w-11 place-items-center rounded-full text-white/70"
+      className="glass glass-hover grid h-11 w-11 place-items-center rounded-full text-fg/70"
       style={active ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}
       whileTap={{ scale: 0.9 }}
       whileHover={{ y: -2 }}

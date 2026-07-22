@@ -3,7 +3,7 @@ import { Check, Music, RotateCcw, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import type { AccentKey, Settings as SettingsType } from '@/types'
 import { useSettings } from '@/hooks/useSettings'
-import { ACCENTS, DEFAULT_MUSIC_SOURCE, TIMEZONES } from '@/utils/constants'
+import { ACCENTS, MUSIC_PRESETS, TIMEZONES } from '@/utils/constants'
 import { parseYouTubeSource } from '@/utils/youtube'
 
 interface SettingsProps {
@@ -41,13 +41,13 @@ export function Settings({ open, onClose }: SettingsProps) {
             <header className="flex items-center justify-between border-b border-white/10 px-6 py-5">
               <div>
                 <h2 className="text-lg font-semibold tracking-wide">Settings</h2>
-                <p className="text-xs text-white/45">Saved automatically to this device</p>
+                <p className="text-xs text-fg/45">Saved automatically to this device</p>
               </div>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close settings"
-                className="grid h-9 w-9 place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                className="grid h-9 w-9 place-items-center rounded-full text-fg/60 transition-colors hover:bg-white/10 hover:text-fg"
               >
                 <X size={18} />
               </button>
@@ -77,7 +77,7 @@ export function Settings({ open, onClose }: SettingsProps) {
               {/* Appearance */}
               <Section title="Appearance">
                 <div className="space-y-3">
-                  <p className="text-sm text-white/70">Accent colour</p>
+                  <p className="text-sm text-fg/70">Accent colour</p>
                   <div className="flex flex-wrap gap-3">
                     {ACCENTS.map((a) => (
                       <AccentSwatch
@@ -152,7 +152,7 @@ export function Settings({ open, onClose }: SettingsProps) {
               <button
                 type="button"
                 onClick={reset}
-                className="flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-white"
+                className="flex items-center gap-2 text-sm text-fg/50 transition-colors hover:text-fg"
               >
                 <RotateCcw size={15} />
                 Reset to defaults
@@ -168,7 +168,7 @@ export function Settings({ open, onClose }: SettingsProps) {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-4">
-      <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white/40">
+      <h3 className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-fg/40">
         {title}
       </h3>
       {children}
@@ -187,7 +187,7 @@ function ToggleRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-sm text-white/70">{label}</span>
+      <span className="text-sm text-fg/70">{label}</span>
       <button
         type="button"
         role="switch"
@@ -227,8 +227,8 @@ function SliderRow({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-white/70">{label}</span>
-        <span className="tabular-nums text-white/45">{format(value)}</span>
+        <span className="text-fg/70">{label}</span>
+        <span className="tabular-nums text-fg/45">{format(value)}</span>
       </div>
       <input
         type="range"
@@ -257,11 +257,11 @@ function SelectRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-white/70">{label}</span>
+      <span className="text-sm text-fg/70">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-white/80 outline-none transition-colors focus:border-white/25"
+        className="max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-fg/80 outline-none transition-colors focus:border-white/25"
       >
         {options.map((o) => (
           <option key={o} value={o} className="bg-ink-850 text-white">
@@ -295,25 +295,43 @@ function MusicSourceField({
     setError(null)
   }
 
-  const resetToDefault = () => {
-    onApply(DEFAULT_MUSIC_SOURCE)
-    setDraft('')
-    setError(null)
-  }
-
   return (
     <div className="space-y-3">
       <div
-        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white/80"
+        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-fg/80"
         title={current.id}
       >
-        <Music size={14} className="shrink-0 text-white/40" />
+        <Music size={14} className="shrink-0 text-fg/40" />
         <span className="min-w-0 flex-1 truncate">
           {current.label ?? (current.type === 'playlist' ? 'Custom playlist' : 'Custom video')}
         </span>
-        <span className="shrink-0 text-[0.65rem] uppercase tracking-wider text-white/35">
+        <span className="shrink-0 text-[0.65rem] uppercase tracking-wider text-fg/35">
           {current.type}
         </span>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {MUSIC_PRESETS.map((preset) => {
+          const active = current.id === preset.id
+          return (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => onApply(preset)}
+              aria-pressed={active}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                active ? 'text-[#09090b]' : 'text-fg/70 hover:bg-white/10'
+              }`}
+              style={
+                active
+                  ? { background: 'var(--accent)', borderColor: 'var(--accent)' }
+                  : { borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.06)' }
+              }
+            >
+              {preset.label ?? preset.id}
+            </button>
+          )
+        })}
       </div>
 
       <div className="space-y-1.5">
@@ -329,7 +347,7 @@ function MusicSourceField({
               if (e.key === 'Enter') apply()
             }}
             placeholder="Paste a YouTube playlist or video URL"
-            className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-white/80 outline-none transition-colors placeholder:text-white/30 focus:border-white/25"
+            className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm text-fg/80 outline-none transition-colors placeholder:text-fg/30 focus:border-white/25"
           />
           <button
             type="button"
@@ -341,22 +359,11 @@ function MusicSourceField({
           </button>
         </div>
         {error && <p className="text-xs text-red-300/80">{error}</p>}
-        <p className="text-xs text-white/35">
+        <p className="text-xs text-fg/35">
           Works with any playlist link, or a single video/live-stream link to
           loop.
         </p>
       </div>
-
-      {current.id !== DEFAULT_MUSIC_SOURCE.id && (
-        <button
-          type="button"
-          onClick={resetToDefault}
-          className="flex items-center gap-2 text-xs text-white/45 transition-colors hover:text-white"
-        >
-          <RotateCcw size={13} />
-          Reset to default playlist
-        </button>
-      )}
     </div>
   )
 }

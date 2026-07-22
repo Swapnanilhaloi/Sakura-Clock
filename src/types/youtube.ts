@@ -14,6 +14,8 @@ export interface YTPlayer {
   setVolume(volume: number): void
   getVolume(): number
   getVideoData(): { title?: string; video_id?: string }
+  /** Playlist sources only — shuffles play order, including which video starts. */
+  setShuffle(shufflePlaylist: boolean): void
   destroy(): void
 }
 

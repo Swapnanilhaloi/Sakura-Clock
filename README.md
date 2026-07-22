@@ -17,8 +17,10 @@ CSS**, **Framer Motion**, and **Lucide** icons. Dark mode only.
   60 FPS.
 - **Live clock** — large digital time with weekday, full date, and timezone,
   formatted with `Intl.DateTimeFormat` and aligned to the second boundary.
-- **Weather card** — temperature, feels-like, humidity, wind, sunrise & sunset
-  (mock data by default; a live OpenWeather stub is included — see below).
+- **Weather card** — live temperature, feels-like, humidity, wind, sunrise &
+  sunset for the user's actual GPS location (via the browser's geolocation +
+  the free, keyless Open-Meteo API); falls back to a fixed demo payload if
+  location access is denied or unavailable — see below.
 - **Focus timer** — a Pomodoro-style floating timer: 25-minute focus blocks
   with short/long breaks, adjustable durations, session dots, a completion
   chime, and an optional browser notification.
@@ -61,18 +63,21 @@ npm run build    # type-check + production build
 npm run preview  # preview the production build
 ```
 
-## 🌦️ Live weather (optional)
+## 🌦️ Live weather
 
-The app ships with mock weather so it runs fully offline. To use real data,
-grab an [OpenWeather](https://openweathermap.org/api) key and call the included
-stub in [`src/utils/mockWeather.ts`](src/utils/mockWeather.ts):
+On load, `useGeolocation` (in
+[`src/hooks/useGeolocation.ts`](src/hooks/useGeolocation.ts)) asks the browser
+for the user's position via the standard Geolocation API — that's the native
+permission prompt, nothing custom. Once coordinates land, `useWeather` (in
+[`src/hooks/useWeather.ts`](src/hooks/useWeather.ts)) fetches current
+conditions from [Open-Meteo](https://open-meteo.com) — free, no API key — and
+reverse-geocodes the coordinates to a "City, Country" label via BigDataCloud's
+free client API. Both live in
+[`src/utils/weather.ts`](src/utils/weather.ts).
 
-```ts
-import { fetchWeather } from '@/utils/mockWeather'
-
-const weather = await fetchWeather({ lat: 22.57, lon: 88.36, apiKey: KEY })
-// then: <WeatherCard weather={weather} />
-```
+If permission is denied, geolocation is unsupported, or a request fails, the
+card just quietly stays on `MOCK_WEATHER` (or whatever it last successfully
+fetched) — there's no error state in the UI.
 
 ## 🗂️ Project structure
 
@@ -80,11 +85,10 @@ const weather = await fetchWeather({ lat: 22.57, lon: 88.36, apiKey: KEY })
 src/
   components/    Clock, WeatherCard, QuoteCard, Settings, Background,
                  SkyCanvas, MusicPlayer, PomodoroTimer, GlassCard, Onboarding
-  hooks/         useClock, useSettings, usePomodoro, useQuote,
-                 useMousePosition, useFullscreen, useKeyboardShortcuts,
-                 useYouTubePlaylist, useDayPhase
-  utils/         time, storage, quotes, mockWeather, constants, youtube,
-                 dayPhase
+  hooks/         useClock, useSettings, usePomodoro, useQuote, useWeather,
+                 useGeolocation, useMousePosition, useFullscreen,
+                 useKeyboardShortcuts, useYouTubePlaylist, useDayPhase
+  utils/         time, storage, quotes, weather, constants, youtube, dayPhase
   types/         shared TypeScript interfaces, youtube (IFrame API typings)
 ```
 

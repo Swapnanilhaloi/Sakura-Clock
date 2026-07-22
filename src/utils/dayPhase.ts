@@ -57,10 +57,14 @@ const MORNING: DayPhase = {
 const DAY: DayPhase = {
   key: 'day',
   label: 'Day',
+  // Kept noticeably brighter/more uniform than the other phases — with
+  // day-time text switched to near-black for contrast (see html.daytime in
+  // index.css), even the darkest stop here needs to stay light throughout
+  // the frame, not just near the horizon.
   gradient:
-    'linear-gradient(160deg, #123055 0%, #204d80 30%, #4380ad 55%, #86b7d4 80%, #cbe4ef 100%)',
+    'linear-gradient(160deg, #6f9ecb 0%, #86b0d6 30%, #a3c4e0 55%, #c6dfec 80%, #e8f3f8 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(255,247,224,0.16) 0%, rgba(130,180,210,0.08) 40%, transparent 70%)',
+    'radial-gradient(120% 100% at 50% 100%, rgba(255,247,224,0.22) 0%, rgba(163,196,224,0.1) 40%, transparent 70%)',
   starOpacity: 0,
   mountainFar: '#264264',
   mountainNear: '#182c46',

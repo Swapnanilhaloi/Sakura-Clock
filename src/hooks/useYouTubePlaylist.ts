@@ -41,9 +41,9 @@ export interface YouTubePlaylistState {
 
 /**
  * Drives a hidden YouTube IFrame player — either through an entire playlist
- * or a single looping video — used to stream ambient background audio,
- * controlled by play/pause and skip affordances. Streams directly from
- * YouTube; nothing is downloaded or cached.
+ * (shuffled fresh on every load) or a single looping video — used to stream
+ * ambient background audio, controlled by play/pause and skip affordances.
+ * Streams directly from YouTube; nothing is downloaded or cached.
  */
 export function useYouTubePlaylist(source: MusicSource): YouTubePlaylistState {
   const playerRef = useRef<YTPlayer | null>(null)
@@ -95,6 +95,9 @@ export function useYouTubePlaylist(source: MusicSource): YouTubePlaylistState {
         events: {
           onReady: (e: YTPlayerEvent) => {
             e.target.setVolume(volume)
+            // Shuffle playlist sources so each visit opens on a different
+            // track rather than always the playlist's first upload.
+            if (source.type === 'playlist') e.target.setShuffle(true)
             if (wasPlayingRef.current) e.target.playVideo()
             setReady(true)
           },

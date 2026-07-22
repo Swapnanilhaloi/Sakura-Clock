@@ -37,7 +37,7 @@ function ClockBase() {
           <span key={i} className="flex items-end">
             {i > 0 && (
               <motion.span
-                className="mx-[0.06em] -translate-y-[0.06em] text-white/30"
+                className="mx-[0.06em] -translate-y-[0.06em] text-fg/30"
                 animate={{ opacity: [0.25, 0.7, 0.25] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               >
@@ -50,7 +50,7 @@ function ClockBase() {
 
         {!settings.hour24 && clock.ampm && (
           <span
-            className="ml-[0.25em] mb-[0.18em] text-[0.28em] font-medium tracking-[0.35em] text-white/50"
+            className="ml-[0.25em] mb-[0.18em] text-[0.28em] font-medium tracking-[0.35em] text-fg/50"
             style={{ color: 'var(--accent)' }}
           >
             {clock.ampm}
@@ -66,15 +66,15 @@ function ClockBase() {
         transition={{ delay: 0.35, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       >
         <p
-          className="text-lg font-medium tracking-[0.3em] text-white/85 sm:text-2xl"
+          className="text-lg font-medium tracking-[0.3em] text-fg/85 sm:text-2xl"
           style={{ color: 'var(--accent-soft)' }}
         >
           {clock.weekday}
         </p>
-        <p className="text-sm font-light tracking-[0.2em] text-white/55 sm:text-base">
+        <p className="text-sm font-light tracking-[0.2em] text-fg/55 sm:text-base">
           {clock.date}
         </p>
-        <div className="mt-3 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[0.7rem] font-medium tracking-widest text-white/60 backdrop-blur-md">
+        <div className="mt-3 flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-[0.7rem] font-medium tracking-widest text-fg/60 backdrop-blur-md">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: 'var(--accent)' }} />
           {settings.timezone} · {offset}
         </div>

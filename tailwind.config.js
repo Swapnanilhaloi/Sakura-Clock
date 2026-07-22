@@ -16,6 +16,12 @@ export default {
           sky: '#7DD3FC',
           pink: '#F9A8D4',
         },
+        // Theme-aware foreground text: white at night, switched to near-black
+        // during the bright 'Day' sky phase (see html.daytime in index.css).
+        // The <alpha-value> placeholder lets text-fg/NN opacity modifiers work.
+        fg: {
+          DEFAULT: 'rgb(var(--fg-rgb) / <alpha-value>)',
+        },
       },
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],

@@ -9,18 +9,7 @@ import {
   type FocusEvent,
 } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import {
-  BrainCircuit,
-  ChevronDown,
-  ChevronUp,
-  Coffee,
-  Minus,
-  Pause,
-  Play,
-  Plus,
-  RotateCcw,
-  SkipForward,
-} from 'lucide-react'
+import { BrainCircuit, Coffee, Minus, Pause, Play, Plus, RotateCcw, SkipForward } from 'lucide-react'
 import { usePomodoro, type PomodoroMode } from '@/hooks/usePomodoro'
 
 export interface PomodoroTimerHandle {
@@ -61,11 +50,10 @@ function formatSpoken(totalSeconds: number): string {
  * Floating focus-timer button, mirroring MusicPlayer's button+panel shape on
  * the opposite corner. The ring around the icon tracks session progress.
  *
- * The details panel opens on hover for mouse users, but also on keyboard
- * focus (so Tab reveals it without a click) and via a dedicated toggle
- * button that pins it open for touch users, who have no hover state at all.
- * A screen-reader-only status region announces session transitions without
- * reading the countdown aloud every second.
+ * The details panel opens on hover for mouse users, and also on keyboard
+ * focus so Tab reveals it without a click. A screen-reader-only status
+ * region announces session transitions without reading the countdown aloud
+ * every second.
  */
 export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTimer(_props, ref) {
   const {
@@ -83,11 +71,8 @@ export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTi
 
   const [hoverOpen, setHoverOpen] = useState(false)
   const [focusOpen, setFocusOpen] = useState(false)
-  const [pinned, setPinned] = useState(false)
-  const open = hoverOpen || focusOpen || pinned
+  const open = hoverOpen || focusOpen
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const toggleDetailsRef = useRef<HTMLButtonElement>(null)
   const panelId = useId()
   const shouldReduceMotion = useReducedMotion()
 
@@ -100,30 +85,6 @@ export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTi
       Notification.requestPermission().catch(() => {})
     }
   }, [running])
-
-  // Once pinned open (tap/click), close on outside click or Escape, and
-  // return focus to the toggle so keyboard users aren't left stranded on a
-  // control that just vanished.
-  useEffect(() => {
-    if (!pinned) return
-    const onPointerDown = (e: PointerEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setPinned(false)
-      }
-    }
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setPinned(false)
-        toggleDetailsRef.current?.focus()
-      }
-    }
-    document.addEventListener('pointerdown', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [pinned])
 
   // Announce session transitions for anyone not watching the screen — the
   // visible countdown itself stays outside this live region so it isn't
@@ -155,7 +116,6 @@ export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTi
 
   return (
     <div
-      ref={containerRef}
       role="region"
       aria-label="Focus timer"
       className="fixed bottom-6 right-6 z-40 flex flex-row-reverse items-end gap-3"
@@ -199,23 +159,10 @@ export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTi
             style={{ transition: shouldReduceMotion ? 'none' : 'stroke-dashoffset 0.3s linear' }}
           />
         </svg>
-        <span className="relative text-white/70" aria-hidden="true">
+        <span className="relative text-fg/70" aria-hidden="true">
           {isBreak ? <Coffee size={18} /> : <BrainCircuit size={18} />}
         </span>
       </motion.button>
-
-      {/* Shows/hides the details panel — works for touch and keyboard, not just hover */}
-      <button
-        ref={toggleDetailsRef}
-        type="button"
-        onClick={() => setPinned((v) => !v)}
-        aria-expanded={open}
-        aria-controls={panelId}
-        aria-label={open ? 'Hide focus timer details' : 'Show focus timer details'}
-        className={`glass glass-hover grid h-10 w-10 shrink-0 place-items-center rounded-full text-white/70 ${FOCUS_RING}`}
-      >
-        {open ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-      </button>
 
       {/* Expanding session panel */}
       <AnimatePresence>
@@ -230,10 +177,10 @@ export const PomodoroTimer = forwardRef<PomodoroTimerHandle>(function PomodoroTi
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[0.65rem] uppercase tracking-widest text-white/60">
+                <p className="text-[0.65rem] uppercase tracking-widest text-fg/60">
                   {MODE_LABEL[mode]}
                 </p>
-                <p className="text-2xl font-semibold tabular-nums text-white/90">
+                <p className="text-2xl font-semibold tabular-nums text-fg/90">
                   <span aria-hidden="true">{formatTime(secondsLeft)}</span>
                   <span className="sr-only">{formatSpoken(secondsLeft)} remaining</span>
                 </p>
@@ -305,7 +252,7 @@ function IconButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`grid h-9 w-9 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white ${FOCUS_RING}`}
+      className={`grid h-9 w-9 place-items-center rounded-full text-fg/70 transition-colors hover:bg-white/10 hover:text-fg ${FOCUS_RING}`}
     >
       {children}
     </button>
@@ -343,7 +290,7 @@ function DurationRow({
 }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <label htmlFor={id} className="text-white/70">
+      <label htmlFor={id} className="text-fg/70">
         {label}
       </label>
       <div className="flex items-center gap-1.5">
@@ -352,7 +299,7 @@ function DurationRow({
           aria-label={`Decrease ${label} duration`}
           disabled={value <= 1}
           onClick={() => onChange(Math.max(1, value - 1))}
-          className={`grid h-8 w-8 place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-30 ${FOCUS_RING}`}
+          className={`grid h-8 w-8 place-items-center rounded-full text-fg/60 transition-colors hover:bg-white/10 hover:text-fg disabled:pointer-events-none disabled:opacity-30 ${FOCUS_RING}`}
         >
           <Minus size={13} />
         </button>
@@ -368,14 +315,14 @@ function DurationRow({
             const n = Math.round(Number(e.target.value))
             if (!Number.isNaN(n)) onChange(Math.min(90, Math.max(1, n)))
           }}
-          className={`w-12 rounded-lg border border-white/10 bg-white/[0.06] py-1 text-center tabular-nums text-white/85 outline-none transition-colors focus:border-white/30 ${FOCUS_RING}`}
+          className={`w-12 rounded-lg border border-white/10 bg-white/[0.06] py-1 text-center tabular-nums text-fg/85 outline-none transition-colors focus:border-white/30 ${FOCUS_RING}`}
         />
         <button
           type="button"
           aria-label={`Increase ${label} duration`}
           disabled={value >= 90}
           onClick={() => onChange(Math.min(90, value + 1))}
-          className={`grid h-8 w-8 place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-30 ${FOCUS_RING}`}
+          className={`grid h-8 w-8 place-items-center rounded-full text-fg/60 transition-colors hover:bg-white/10 hover:text-fg disabled:pointer-events-none disabled:opacity-30 ${FOCUS_RING}`}
         >
           <Plus size={13} />
         </button>

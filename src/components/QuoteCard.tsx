@@ -24,7 +24,7 @@ function QuoteCardBase() {
         <AnimatePresence mode="wait">
           <motion.p
             key={index}
-            className="text-sm font-light italic tracking-wide text-white/70 sm:text-base"
+            className="text-sm font-light italic tracking-wide text-fg/70 sm:text-base"
             initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -8, filter: 'blur(8px)' }}

@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useSettings } from '@/hooks/useSettings'
 import { useMousePosition } from '@/hooks/useMousePosition'
@@ -19,6 +19,14 @@ function BackgroundBase() {
   const parallax = useMousePosition(true)
   const intensity = settings.backgroundIntensity
   const phase = useDayPhase(settings.timezone, settings.dayNightCycle)
+
+  // Flips every text element app-wide (via html.daytime in index.css) to
+  // near-black during the bright 'Day' phase, so it stays legible against
+  // the pale sky — a global DOM toggle since text lives in sibling
+  // components this background doesn't render.
+  useEffect(() => {
+    document.documentElement.classList.toggle('daytime', phase.key === 'day')
+  }, [phase.key])
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden bg-ink-950">
@@ -48,12 +56,16 @@ function BackgroundBase() {
             transition={{ duration: 3, ease: 'easeInOut' }}
           />
         </AnimatePresence>
-        {/* Top vignette for contrast behind the cards */}
+        {/* Top vignette for contrast behind the cards — faded out during the
+            bright 'Day' phase, where it would just re-darken the corners
+            that day-time black text relies on staying light. */}
         <div
           className="absolute inset-0"
           style={{
             background:
               'radial-gradient(120% 90% at 50% 10%, transparent 40%, rgba(9,9,11,0.55) 100%)',
+            opacity: phase.key === 'day' ? 0 : 1,
+            transition: 'opacity 3s ease',
           }}
         />
       </div>

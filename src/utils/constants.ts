@@ -31,6 +31,20 @@ export const DEFAULT_MUSIC_SOURCE: MusicSource = {
   label: 'SAKURA RONIN — Lofi',
 }
 
+/**
+ * Quick-pick music sources offered in Settings, alongside pasting a custom
+ * link. Each is a channel's "all uploads" playlist (channel id with its
+ * leading UC swapped for UU).
+ */
+export const MUSIC_PRESETS: MusicSource[] = [
+  DEFAULT_MUSIC_SOURCE,
+  {
+    type: 'playlist',
+    id: 'UUf20FXp1sQHap63XFiIZtdw',
+    label: 'Sakura Reggae',
+  },
+]
+
 export const DEFAULT_SETTINGS: Settings = {
   hour24: true,
   showSeconds: false,
