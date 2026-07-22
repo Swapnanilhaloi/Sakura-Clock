@@ -22,7 +22,8 @@ export interface MusicPlayerHandle {
  * Floating circular music button. Streams the playlist/video configured in
  * Settings via a hidden YouTube IFrame player — disc spins while playing; an
  * expanding panel shows the track's thumbnail, full title, skip controls and
- * a volume slider.
+ * a volume slider. Fades to a dim, unobtrusive state while paused and idle,
+ * brightening on hover/focus or as soon as playback starts.
  */
 export const MusicPlayer = forwardRef<MusicPlayerHandle>(function MusicPlayer(_props, ref) {
   const { settings } = useSettings()
@@ -37,40 +38,62 @@ export const MusicPlayer = forwardRef<MusicPlayerHandle>(function MusicPlayer(_p
       className="fixed bottom-6 left-6 z-40 flex items-end gap-3"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false)
+      }}
     >
-      {/* Main disc button */}
-      <motion.button
-        type="button"
-        onClick={toggle}
-        aria-label={playing ? 'Pause music' : 'Play music'}
-        className="glass glass-hover relative grid h-14 w-14 shrink-0 place-items-center rounded-full"
-        whileTap={{ scale: 0.92 }}
+      {/* Entrance pop-in — separate from the play/pause fade below so the two
+          opacity animations don't fight each other. */}
+      <motion.div
+        className="shrink-0"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.9, type: 'spring', stiffness: 200, damping: 18 }}
       >
-        <motion.div
-          className="absolute inset-0 grid place-items-center text-white/25"
-          animate={{ rotate: playing ? 360 : 0 }}
-          transition={
-            playing
-              ? { duration: 4, repeat: Infinity, ease: 'linear' }
-              : { duration: 0.4 }
-          }
+        {/* Main disc button — dims to stay out of the way while paused and
+            idle, brightening on hover/focus or as soon as playback starts. */}
+        <motion.button
+          type="button"
+          onClick={toggle}
+          aria-label={playing ? 'Pause music' : 'Play music'}
+          className="glass glass-hover relative grid h-14 w-14 shrink-0 place-items-center rounded-full"
+          whileTap={{ scale: 0.92 }}
+          animate={{ opacity: playing || open ? 1 : 0.4 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
         >
-          <Disc3 size={44} strokeWidth={1.1} />
-        </motion.div>
-        <span
-          className="relative grid h-7 w-7 place-items-center rounded-full"
-          style={{ background: 'var(--accent)', color: '#09090b' }}
-        >
-          {playing ? (
-            <Pause size={14} fill="currentColor" />
-          ) : (
-            <Play size={14} fill="currentColor" className="ml-0.5" />
-          )}
-        </span>
-      </motion.button>
+          <motion.div
+            className="absolute inset-0 grid place-items-center overflow-hidden rounded-full text-white/25"
+            animate={{ rotate: playing ? 360 : 0 }}
+            transition={
+              playing
+                ? { duration: 4, repeat: Infinity, ease: 'linear' }
+                : { duration: 0.4 }
+            }
+          >
+            {videoId ? (
+              <img
+                src={videoThumbnail(videoId)}
+                alt=""
+                className="h-full w-full rounded-full object-cover"
+                draggable={false}
+              />
+            ) : (
+              <Disc3 size={44} strokeWidth={1.1} />
+            )}
+          </motion.div>
+          <span
+            className="relative grid h-7 w-7 place-items-center rounded-full"
+            style={{ background: 'var(--accent)', color: '#09090b' }}
+          >
+            {playing ? (
+              <Pause size={14} fill="currentColor" />
+            ) : (
+              <Play size={14} fill="currentColor" className="ml-0.5" />
+            )}
+          </span>
+        </motion.button>
+      </motion.div>
 
       {/* Expanding now-playing panel */}
       <AnimatePresence>

@@ -9,17 +9,19 @@ CSS**, **Framer Motion**, and **Lucide** icons. Dark mode only.
 
 ## ✨ Features
 
-- **Cinematic background** — animated gradient sky, slow drifting clouds, a
-  layered mountain silhouette, twinkling stars, glowing particles, and falling
-  sakura petals. All rendered through a single `requestAnimationFrame` canvas
-  loop for a steady 60 FPS.
+- **Cinematic background** — animated gradient sky with true-to-life
+  dawn/day/dusk/night colouring, slow drifting clouds, a glowing moon, distant
+  bird flocks, a layered mountain silhouette with a pine treeline and torii
+  gate, twinkling stars, glowing particles, and falling sakura petals. All
+  rendered through a single `requestAnimationFrame` canvas loop for a steady
+  60 FPS.
 - **Live clock** — large digital time with weekday, full date, and timezone,
   formatted with `Intl.DateTimeFormat` and aligned to the second boundary.
 - **Weather card** — temperature, feels-like, humidity, wind, sunrise & sunset
   (mock data by default; a live OpenWeather stub is included — see below).
-- **System panel** — battery %, online status, live FPS estimate, device type,
-  browser, OS, and screen resolution. Fully customisable from Settings: hide
-  the whole panel or pick exactly which stats show.
+- **Focus timer** — a Pomodoro-style floating timer: 25-minute focus blocks
+  with short/long breaks, adjustable durations, session dots, a completion
+  chime, and an optional browser notification.
 - **Anime quotes** — a gentle line that fades to a new one every minute.
 - **Music player** — floating disc button that streams the
   [SAKURA RONIN](https://www.youtube.com/@SAKURARONIN44) lofi playlist via a
@@ -30,15 +32,15 @@ CSS**, **Framer Motion**, and **Lucide** icons. Dark mode only.
   based on the clock's own timezone, cross-fading smoothly at each boundary.
   Toggle it off in Settings to keep the original fixed evening sky.
 - **Settings drawer** — 12/24-hour, seconds, accent colour, background
-  intensity, particle amount, clock size, sakura/stars/rain/day-night toggles,
-  timezone, the music source (paste any YouTube playlist or video URL), and
-  System panel visibility per-stat. Everything persists to `localStorage`.
+  intensity, particle amount, clock size, sakura/stars/day-night toggles,
+  timezone, and the music source (paste any YouTube playlist or video URL).
+  Everything persists to `localStorage`.
 - **Atmospherics** — glassmorphism, backdrop blur, pointer parallax, and soft
   fade / slide / blur-reveal transitions throughout.
 - **First-time welcome guide** — a short orientation card on first visit
   (dismissal remembered in `localStorage`), reopenable anytime via the "?"
   button in the control dock or the `?` shortcut.
-- **Extras** — ambient rain toggle, fullscreen mode, and keyboard shortcuts.
+- **Extras** — fullscreen mode and keyboard shortcuts.
 
 ## ⌨️ Keyboard shortcuts
 
@@ -46,6 +48,7 @@ CSS**, **Framer Motion**, and **Lucide** icons. Dark mode only.
 | --- | ------------------- |
 | `F` | Toggle fullscreen   |
 | `M` | Play / pause music  |
+| `P` | Start / pause focus timer |
 | `S` | Toggle settings     |
 | `?` | Show welcome guide  |
 
@@ -76,12 +79,12 @@ const weather = await fetchWeather({ lat: 22.57, lon: 88.36, apiKey: KEY })
 ```
 src/
   components/    Clock, WeatherCard, QuoteCard, Settings, Background,
-                 SkyCanvas, MusicPlayer, DeviceInfo, GlassCard, Onboarding
-  hooks/         useClock, useSettings, useFps, useDeviceInfo, useQuote,
+                 SkyCanvas, MusicPlayer, PomodoroTimer, GlassCard, Onboarding
+  hooks/         useClock, useSettings, usePomodoro, useQuote,
                  useMousePosition, useFullscreen, useKeyboardShortcuts,
                  useYouTubePlaylist, useDayPhase
-  utils/         time, storage, quotes, mockWeather, device, constants,
-                 youtube, dayPhase
+  utils/         time, storage, quotes, mockWeather, constants, youtube,
+                 dayPhase
   types/         shared TypeScript interfaces, youtube (IFrame API typings)
 ```
 
@@ -102,8 +105,9 @@ already playing. The built-in default lives in `DEFAULT_MUSIC_SOURCE` in
 [`src/utils/constants.ts`](src/utils/constants.ts) — any channel's "all
 uploads" playlist id is `UU` + the channel id with its leading `UC` removed.
 
-Non-critical panels (weather, system, music, settings) are lazy-loaded so the
-clock paints first; components are memoised to avoid re-rendering on each tick.
+Non-critical panels (weather, music, focus timer, settings) are lazy-loaded so
+the clock paints first; components are memoised to avoid re-rendering on each
+tick.
 
 ## 🎨 Customisation
 

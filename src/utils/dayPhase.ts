@@ -1,8 +1,8 @@
 /**
  * Time-of-day sky presets. Boundaries are fractional hours (0–24) so the
- * phase can be recomputed cheaply every minute. Colours stay deliberately
- * desaturated across every phase — even "day" — to keep the muted,
- * no-bright-colours mood consistent through the full cycle.
+ * phase can be recomputed cheaply every minute. Hues follow the real sky:
+ * blue by day and night, warm gold/orange at dawn and dusk — kept muted
+ * rather than vivid, but never tinted purple/violet.
  */
 
 export interface DayPhase {
@@ -22,72 +22,72 @@ const NIGHT: DayPhase = {
   key: 'night',
   label: 'Night',
   gradient:
-    'linear-gradient(135deg, #0b1020 0%, #131a2e 25%, #1e293b 50%, #241b33 75%, #0b1020 100%)',
+    'linear-gradient(135deg, #01030a 0%, #060b18 30%, #0b1528 60%, #122036 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(249,168,212,0.16) 0%, rgba(167,139,250,0.10) 35%, transparent 70%)',
+    'radial-gradient(120% 100% at 50% 100%, rgba(56,84,128,0.18) 0%, rgba(20,30,52,0.08) 40%, transparent 70%)',
   starOpacity: 1,
-  mountainFar: '#0f1626',
-  mountainNear: '#080b14',
+  mountainFar: '#0a0e1a',
+  mountainNear: '#050810',
 }
 
 const DAWN: DayPhase = {
   key: 'dawn',
   label: 'Dawn',
   gradient:
-    'linear-gradient(160deg, #171b2e 0%, #2a2440 35%, #4b3450 60%, #7a4f52 85%, #9c6257 100%)',
+    'linear-gradient(160deg, #060b18 0%, #16233c 30%, #3c4f68 55%, #8a7a68 80%, #d9a466 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(251,191,150,0.22) 0%, rgba(167,139,250,0.08) 40%, transparent 70%)',
-  starOpacity: 0.4,
-  mountainFar: '#1a1f33',
-  mountainNear: '#11141f',
+    'radial-gradient(120% 100% at 50% 100%, rgba(255,186,120,0.30) 0%, rgba(120,120,140,0.06) 40%, transparent 70%)',
+  starOpacity: 0.3,
+  mountainFar: '#16223a',
+  mountainNear: '#0d1524',
 }
 
 const MORNING: DayPhase = {
   key: 'morning',
   label: 'Morning',
   gradient:
-    'linear-gradient(160deg, #232a42 0%, #34405f 30%, #55688c 55%, #8298b8 80%, #b9c6d9 100%)',
+    'linear-gradient(160deg, #14243c 0%, #27405e 30%, #4d6d8f 55%, #93b3cc 80%, #d7e6ee 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(253,224,171,0.16) 0%, rgba(129,163,199,0.08) 40%, transparent 70%)',
+    'radial-gradient(120% 100% at 50% 100%, rgba(255,240,214,0.18) 0%, rgba(140,175,204,0.08) 40%, transparent 70%)',
   starOpacity: 0,
-  mountainFar: '#2a3348',
-  mountainNear: '#1c2334',
+  mountainFar: '#233350',
+  mountainNear: '#162238',
 }
 
 const DAY: DayPhase = {
   key: 'day',
   label: 'Day',
   gradient:
-    'linear-gradient(160deg, #253150 0%, #35476f 30%, #55719c 55%, #86a4c4 80%, #b9cfe3 100%)',
+    'linear-gradient(160deg, #123055 0%, #204d80 30%, #4380ad 55%, #86b7d4 80%, #cbe4ef 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(255,241,214,0.14) 0%, rgba(134,164,196,0.08) 40%, transparent 70%)',
+    'radial-gradient(120% 100% at 50% 100%, rgba(255,247,224,0.16) 0%, rgba(130,180,210,0.08) 40%, transparent 70%)',
   starOpacity: 0,
-  mountainFar: '#324063',
-  mountainNear: '#212c47',
+  mountainFar: '#264264',
+  mountainNear: '#182c46',
 }
 
 const DUSK: DayPhase = {
   key: 'dusk',
   label: 'Dusk',
   gradient:
-    'linear-gradient(160deg, #1c1830 0%, #3a2748 25%, #6b3a55 50%, #b1584f 75%, #e08a4f 100%)',
+    'linear-gradient(160deg, #0c1220 0%, #1c2438 25%, #4a3d40 50%, #a15b42 75%, #e3934f 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(249,168,133,0.30) 0%, rgba(167,139,250,0.10) 40%, transparent 70%)',
+    'radial-gradient(120% 100% at 50% 100%, rgba(255,150,90,0.32) 0%, rgba(120,90,80,0.10) 40%, transparent 70%)',
   starOpacity: 0.3,
-  mountainFar: '#241a30',
-  mountainNear: '#150f1e',
+  mountainFar: '#161c2c',
+  mountainNear: '#0d111c',
 }
 
 const EVENING: DayPhase = {
   key: 'evening',
   label: 'Evening',
   gradient:
-    'linear-gradient(150deg, #0d0f22 0%, #1c1a35 25%, #34274a 50%, #5a3350 75%, #7a4258 100%)',
+    'linear-gradient(150deg, #030509 0%, #080e1c 30%, #101d33 60%, #24303f 85%, #4b4234 100%)',
   horizonGlow:
-    'radial-gradient(120% 100% at 50% 100%, rgba(244,143,177,0.20) 0%, rgba(167,139,250,0.10) 40%, transparent 70%)',
+    'radial-gradient(120% 100% at 50% 100%, rgba(255,170,110,0.14) 0%, rgba(70,90,120,0.08) 40%, transparent 70%)',
   starOpacity: 0.75,
-  mountainFar: '#12101f',
-  mountainNear: '#0a0814',
+  mountainFar: '#0b0f1a',
+  mountainNear: '#06080f',
 }
 
 /** Fallback phase used when the day/night cycle is turned off. */

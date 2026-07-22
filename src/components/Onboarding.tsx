@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Expand, Music4, Settings2, Sparkles, X } from 'lucide-react'
+import { BrainCircuit, Expand, Music4, Settings2, Sparkles, X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 interface OnboardingProps {
@@ -11,7 +11,7 @@ const TIPS: Array<{ icon: LucideIcon; title: string; body: string }> = [
   {
     icon: Settings2,
     title: 'Make it yours',
-    body: 'Open Settings (top right) to change the accent colour, clock size, background mood, and which system stats are shown.',
+    body: 'Open Settings (top right) to change the accent colour, clock size, and background mood.',
   },
   {
     icon: Music4,
@@ -19,9 +19,14 @@ const TIPS: Array<{ icon: LucideIcon; title: string; body: string }> = [
     body: 'The floating disc streams a lofi playlist by default — paste any YouTube playlist or video link in Settings → Music to swap it.',
   },
   {
+    icon: BrainCircuit,
+    title: 'Study & work sessions',
+    body: 'The ring button (bottom right) is a Pomodoro-style focus timer — 25-minute focus blocks with short and long breaks, fully adjustable.',
+  },
+  {
     icon: Expand,
     title: 'Keyboard shortcuts',
-    body: 'F for fullscreen, M to play/pause music, S for Settings.',
+    body: 'F for fullscreen, M to play/pause music, P for the focus timer, S for Settings.',
   },
 ]
 

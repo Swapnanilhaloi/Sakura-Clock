@@ -10,18 +10,7 @@ export function loadSettings(): Settings {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return DEFAULT_SETTINGS
     const parsed = JSON.parse(raw) as Partial<Settings>
-    return {
-      ...DEFAULT_SETTINGS,
-      ...parsed,
-      systemPanel: {
-        ...DEFAULT_SETTINGS.systemPanel,
-        ...parsed.systemPanel,
-        metrics: {
-          ...DEFAULT_SETTINGS.systemPanel.metrics,
-          ...parsed.systemPanel?.metrics,
-        },
-      },
-    }
+    return { ...DEFAULT_SETTINGS, ...parsed }
   } catch {
     return DEFAULT_SETTINGS
   }

@@ -30,33 +30,12 @@ export interface Settings {
   sakura: boolean
   /** Toggle the animated star field. */
   stars: boolean
-  /** Toggle the ambient rain overlay. */
-  rain: boolean
   /** IANA timezone id used for the clock. */
   timezone: string
   /** What the floating music player streams. */
   music: MusicSource
-  /** The System panel's own visibility + which stat rows it shows. */
-  systemPanel: SystemPanelSettings
   /** Shift the sky's colours through dawn/day/dusk/night based on the clock's timezone. */
   dayNightCycle: boolean
-}
-
-/** A single stat row shown in the System panel. */
-export type SystemMetricKey =
-  | 'battery'
-  | 'network'
-  | 'fps'
-  | 'device'
-  | 'browser'
-  | 'os'
-  | 'screen'
-
-export interface SystemPanelSettings {
-  /** Whether the System panel renders at all. */
-  visible: boolean
-  /** Per-metric show/hide. */
-  metrics: Record<SystemMetricKey, boolean>
 }
 
 /** A YouTube playlist or single video the music player streams from. */
@@ -89,13 +68,3 @@ export interface WeatherData {
 }
 
 export type WeatherIcon = 'clear' | 'cloudy' | 'rain' | 'partly' | 'night'
-
-export interface DeviceStats {
-  battery: number | null
-  charging: boolean
-  online: boolean
-  deviceType: string
-  browser: string
-  os: string
-  resolution: string
-}

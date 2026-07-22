@@ -1,17 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check, Music, RotateCcw, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
-import type { AccentKey, Settings as SettingsType, SystemMetricKey } from '@/types'
+import type { AccentKey, Settings as SettingsType } from '@/types'
 import { useSettings } from '@/hooks/useSettings'
-import {
-  ACCENTS,
-  DEFAULT_MUSIC_SOURCE,
-  SYSTEM_METRIC_LABELS,
-  TIMEZONES,
-} from '@/utils/constants'
+import { ACCENTS, DEFAULT_MUSIC_SOURCE, TIMEZONES } from '@/utils/constants'
 import { parseYouTubeSource } from '@/utils/youtube'
-
-const SYSTEM_METRIC_KEYS = Object.keys(SYSTEM_METRIC_LABELS) as SystemMetricKey[]
 
 interface SettingsProps {
   open: boolean
@@ -140,42 +133,10 @@ export function Settings({ open, onClose }: SettingsProps) {
                   onChange={(v) => update('stars', v)}
                 />
                 <ToggleRow
-                  label="Ambient rain"
-                  checked={settings.rain}
-                  onChange={(v) => update('rain', v)}
-                />
-                <ToggleRow
                   label="Day/night cycle"
                   checked={settings.dayNightCycle}
                   onChange={(v) => update('dayNightCycle', v)}
                 />
-              </Section>
-
-              {/* System panel */}
-              <Section title="System panel">
-                <ToggleRow
-                  label="Show system panel"
-                  checked={settings.systemPanel.visible}
-                  onChange={(v) =>
-                    update('systemPanel', { ...settings.systemPanel, visible: v })
-                  }
-                />
-                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                  {SYSTEM_METRIC_KEYS.map((key) => (
-                    <ToggleRow
-                      key={key}
-                      label={SYSTEM_METRIC_LABELS[key]}
-                      checked={settings.systemPanel.metrics[key]}
-                      onChange={(v) =>
-                        update('systemPanel', {
-                          ...settings.systemPanel,
-                          metrics: { ...settings.systemPanel.metrics, [key]: v },
-                        })
-                      }
-                      compact
-                    />
-                  ))}
-                </div>
               </Section>
 
               {/* Music */}
@@ -219,35 +180,26 @@ function ToggleRow({
   label,
   checked,
   onChange,
-  compact = false,
 }: {
   label: string
   checked: boolean
   onChange: (v: boolean) => void
-  /** Smaller switch + label, for dense grids like the System panel metrics. */
-  compact?: boolean
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className={compact ? 'text-xs text-white/60' : 'text-sm text-white/70'}>
-        {label}
-      </span>
+      <span className="text-sm text-white/70">{label}</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         aria-label={label}
         onClick={() => onChange(!checked)}
-        className={`relative shrink-0 rounded-full transition-colors ${
-          compact ? 'h-5 w-9' : 'h-6 w-11'
-        }`}
+        className="relative h-6 w-11 shrink-0 rounded-full transition-colors"
         style={{ background: checked ? 'var(--accent)' : 'rgba(255,255,255,0.14)' }}
       >
         <motion.span
-          className={`absolute top-0.5 left-0.5 rounded-full bg-white shadow ${
-            compact ? 'h-4 w-4' : 'h-5 w-5'
-          }`}
-          animate={{ x: checked ? (compact ? 16 : 20) : 0 }}
+          className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow"
+          animate={{ x: checked ? 20 : 0 }}
           transition={{ type: 'spring', stiffness: 500, damping: 32 }}
         />
       </button>

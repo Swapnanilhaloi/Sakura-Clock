@@ -1,11 +1,4 @@
-import type {
-  AccentKey,
-  AccentOption,
-  MusicSource,
-  Settings,
-  SystemMetricKey,
-  SystemPanelSettings,
-} from '@/types'
+import type { AccentKey, AccentOption, MusicSource, Settings } from '@/types'
 
 /** Selectable accent colours. Kept muted per the "no bright colors" brief. */
 export const ACCENTS: AccentOption[] = [
@@ -38,43 +31,17 @@ export const DEFAULT_MUSIC_SOURCE: MusicSource = {
   label: 'SAKURA RONIN — Lofi',
 }
 
-/** Display order + labels for the System panel's per-metric toggles. */
-export const SYSTEM_METRIC_LABELS: Record<SystemMetricKey, string> = {
-  battery: 'Battery',
-  network: 'Network',
-  fps: 'FPS',
-  device: 'Device',
-  browser: 'Browser',
-  os: 'OS',
-  screen: 'Screen',
-}
-
-export const DEFAULT_SYSTEM_PANEL: SystemPanelSettings = {
-  visible: true,
-  metrics: {
-    battery: true,
-    network: true,
-    fps: true,
-    device: true,
-    browser: true,
-    os: true,
-    screen: true,
-  },
-}
-
 export const DEFAULT_SETTINGS: Settings = {
   hour24: true,
-  showSeconds: true,
+  showSeconds: false,
   accent: 'violet',
   backgroundIntensity: 0.9,
   particleAmount: 0.7,
   clockSize: 1,
   sakura: true,
   stars: true,
-  rain: false,
   timezone: DEFAULT_TIMEZONE,
   music: DEFAULT_MUSIC_SOURCE,
-  systemPanel: DEFAULT_SYSTEM_PANEL,
   dayNightCycle: true,
 }
 

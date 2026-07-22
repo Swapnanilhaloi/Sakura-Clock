@@ -3,7 +3,7 @@ import type { Settings } from '@/types'
 import { getAccent } from '@/utils/constants'
 
 interface SkyCanvasProps {
-  settings: Pick<Settings, 'sakura' | 'stars' | 'rain' | 'particleAmount' | 'accent'>
+  settings: Pick<Settings, 'sakura' | 'stars' | 'particleAmount' | 'accent'>
   /** Parallax offset from the pointer, -1 … 1 on each axis. */
   parallaxX: number
   parallaxY: number
@@ -38,19 +38,12 @@ interface Petal {
   spin: number
   tone: number
 }
-interface Drop {
-  x: number
-  y: number
-  len: number
-  vy: number
-  alpha: number
-}
 
 /**
- * A single-canvas particle engine. Stars, glowing particles, sakura petals and
- * ambient rain all share one requestAnimationFrame loop so the whole ambience
- * costs one draw pass per frame. Live settings/parallax flow in through a ref,
- * which means the loop is created once and never torn down on prop changes.
+ * A single-canvas particle engine. Stars, glowing particles and sakura petals
+ * all share one requestAnimationFrame loop so the whole ambience costs one
+ * draw pass per frame. Live settings/parallax flow in through a ref, which
+ * means the loop is created once and never torn down on prop changes.
  */
 export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -74,7 +67,6 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
     let stars: Star[] = []
     let particles: Particle[] = []
     let petals: Petal[] = []
-    let drops: Drop[] = []
 
     const rand = (min: number, max: number) => min + Math.random() * (max - min)
 
@@ -121,19 +113,6 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
       tone: Math.random(),
     })
 
-    const buildDrops = () => {
-      const count = Math.round((width * height) / 5200)
-      drops = Array.from({ length: count }, () => makeDrop(Math.random() * height))
-    }
-
-    const makeDrop = (startY: number): Drop => ({
-      x: Math.random() * width,
-      y: startY,
-      len: rand(10, 22),
-      vy: rand(9, 15),
-      alpha: rand(0.06, 0.18),
-    })
-
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2)
       width = window.innerWidth
@@ -146,7 +125,6 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
       buildStars()
       buildParticles()
       buildPetals()
-      buildDrops()
     }
 
     resize()
@@ -220,26 +198,6 @@ export function SkyCanvas({ settings, parallaxX, parallaxY, starOpacity }: SkyCa
           }
           drawPetal(ctx, pet, ox, oy)
         }
-      }
-
-      // --- Rain -------------------------------------------------------------
-      if (s.rain) {
-        ctx.strokeStyle = 'rgba(191, 219, 254, 0.35)'
-        ctx.lineCap = 'round'
-        for (const d of drops) {
-          if (!reduce) {
-            d.y += d.vy
-            d.x += 1.1
-            if (d.y > height) Object.assign(d, makeDrop(-20))
-          }
-          ctx.beginPath()
-          ctx.globalAlpha = d.alpha
-          ctx.lineWidth = 1.1
-          ctx.moveTo(d.x, d.y)
-          ctx.lineTo(d.x - 1.4, d.y + d.len)
-          ctx.stroke()
-        }
-        ctx.globalAlpha = 1
       }
 
       raf = requestAnimationFrame(draw)
