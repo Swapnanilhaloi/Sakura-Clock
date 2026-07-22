@@ -1,0 +1,115 @@
+# 桜時計 · Sakura Clock
+
+A premium, anime-inspired desktop clock — a calm, cinematic, distraction-free
+ambient screen in the spirit of Makoto Shinkai skies, Studio Ghibli warmth, and
+rainy-evening lofi cafés. Built with **React + Vite + TypeScript**, **Tailwind
+CSS**, **Framer Motion**, and **Lucide** icons. Dark mode only.
+
+![sky](public/sakura.svg)
+
+## ✨ Features
+
+- **Cinematic background** — animated gradient sky, slow drifting clouds, a
+  layered mountain silhouette, twinkling stars, glowing particles, and falling
+  sakura petals. All rendered through a single `requestAnimationFrame` canvas
+  loop for a steady 60 FPS.
+- **Live clock** — large digital time with weekday, full date, and timezone,
+  formatted with `Intl.DateTimeFormat` and aligned to the second boundary.
+- **Weather card** — temperature, feels-like, humidity, wind, sunrise & sunset
+  (mock data by default; a live OpenWeather stub is included — see below).
+- **System panel** — battery %, online status, live FPS estimate, device type,
+  browser, OS, and screen resolution. Fully customisable from Settings: hide
+  the whole panel or pick exactly which stats show.
+- **Anime quotes** — a gentle line that fades to a new one every minute.
+- **Music player** — floating disc button that streams the
+  [SAKURA RONIN](https://www.youtube.com/@SAKURARONIN44) lofi playlist via a
+  hidden YouTube IFrame player. Hover it for the full "now playing" card:
+  thumbnail, untruncated title, previous/next skip, and a volume slider.
+- **Day/night cycle** — the sky's gradient, horizon glow, mountain tint, and
+  star brightness shift through dawn → morning → day → dusk → evening → night
+  based on the clock's own timezone, cross-fading smoothly at each boundary.
+  Toggle it off in Settings to keep the original fixed evening sky.
+- **Settings drawer** — 12/24-hour, seconds, accent colour, background
+  intensity, particle amount, clock size, sakura/stars/rain/day-night toggles,
+  timezone, the music source (paste any YouTube playlist or video URL), and
+  System panel visibility per-stat. Everything persists to `localStorage`.
+- **Atmospherics** — glassmorphism, backdrop blur, pointer parallax, and soft
+  fade / slide / blur-reveal transitions throughout.
+- **First-time welcome guide** — a short orientation card on first visit
+  (dismissal remembered in `localStorage`), reopenable anytime via the "?"
+  button in the control dock or the `?` shortcut.
+- **Extras** — ambient rain toggle, fullscreen mode, and keyboard shortcuts.
+
+## ⌨️ Keyboard shortcuts
+
+| Key | Action              |
+| --- | ------------------- |
+| `F` | Toggle fullscreen   |
+| `M` | Play / pause music  |
+| `S` | Toggle settings     |
+| `?` | Show welcome guide  |
+
+## 🚀 Getting started
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # type-check + production build
+npm run preview  # preview the production build
+```
+
+## 🌦️ Live weather (optional)
+
+The app ships with mock weather so it runs fully offline. To use real data,
+grab an [OpenWeather](https://openweathermap.org/api) key and call the included
+stub in [`src/utils/mockWeather.ts`](src/utils/mockWeather.ts):
+
+```ts
+import { fetchWeather } from '@/utils/mockWeather'
+
+const weather = await fetchWeather({ lat: 22.57, lon: 88.36, apiKey: KEY })
+// then: <WeatherCard weather={weather} />
+```
+
+## 🗂️ Project structure
+
+```
+src/
+  components/    Clock, WeatherCard, QuoteCard, Settings, Background,
+                 SkyCanvas, MusicPlayer, DeviceInfo, GlassCard, Onboarding
+  hooks/         useClock, useSettings, useFps, useDeviceInfo, useQuote,
+                 useMousePosition, useFullscreen, useKeyboardShortcuts,
+                 useYouTubePlaylist, useDayPhase
+  utils/         time, storage, quotes, mockWeather, device, constants,
+                 youtube, dayPhase
+  types/         shared TypeScript interfaces, youtube (IFrame API typings)
+```
+
+### 🎵 About the music player
+
+Playback streams live from YouTube via the official
+[IFrame Player API](https://developers.google.com/youtube/iframe_api_reference)
+— nothing is downloaded, cached, or rehosted. A web page cannot read what's
+playing elsewhere on your system (another tab, Spotify, the OS mixer); that's
+a deliberate browser sandboxing restriction, not a limitation of this app.
+
+Users can point the player at any playlist or single video from Settings →
+Music by pasting a link — `parseYouTubeSource` in
+[`src/utils/youtube.ts`](src/utils/youtube.ts) accepts `playlist?list=…`
+links, `watch?v=…` links, `youtu.be/…` short links, and `/shorts/`/`/live/`
+links. Switching sources mid-playback resumes automatically if something was
+already playing. The built-in default lives in `DEFAULT_MUSIC_SOURCE` in
+[`src/utils/constants.ts`](src/utils/constants.ts) — any channel's "all
+uploads" playlist id is `UU` + the channel id with its leading `UC` removed.
+
+Non-critical panels (weather, system, music, settings) are lazy-loaded so the
+clock paints first; components are memoised to avoid re-rendering on each tick.
+
+## 🎨 Customisation
+
+- **Accent colours** live in [`src/utils/constants.ts`](src/utils/constants.ts).
+- **Quotes** live in [`src/utils/quotes.ts`](src/utils/quotes.ts).
+- **Palette / radii / animations** are in
+  [`tailwind.config.js`](tailwind.config.js).
+
+Built with care for a quiet corner of your screen. 🌸
